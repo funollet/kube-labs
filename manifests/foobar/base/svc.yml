@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: foobar
+spec:
+  type: ClusterIP
+  selector:
+    app: http-echo
+  ports:
+    - port: 5678
+      targetPort: 8080
