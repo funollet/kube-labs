@@ -29,10 +29,7 @@ destroy: stop-lb destroy-cluster
 start: start-containers start-lb
  
 # ensure cluster and load balancer are stopped
-stop:
-  @echo "Not yet implemented"
-  # - [ ] stop the load balancer if running
-  # - [ ] stop the containers that are nodes
+stop: stop-lb stop-containers
 
 # start stopped Kind cluster containers
 start-containers:
@@ -67,6 +64,19 @@ start-lb:
 stop-lb:
   -kill $(cat /tmp/cloud-provider-kind.pid)
   -rm /tmp/cloud-provider-kind.pid
+
+# stop Kind cluster containers
+stop-containers:
+  #!/usr/bin/env bash
+  # Get cluster name from current kubectl context
+  cluster_name=$(kubectl config current-context | sed 's/kind-//')
+
+  # Stop all running Kind cluster containers
+  running_containers=$(docker ps --filter "label=io.x-k8s.kind.cluster=$cluster_name" --filter "status=running" --format "{{.ID}}")
+
+  if [ -n "$running_containers" ]; then
+    docker stop $running_containers
+  fi
 
 # destroy the cluster
 destroy-cluster:
