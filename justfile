@@ -1,6 +1,6 @@
 # https://just.systems
 
-kind-config := "kind-config/one-node.yaml"
+kind_config := "kind-config/one-node.yaml"
 default_overlay := "kind"
 
 # show this message
@@ -25,7 +25,7 @@ stop:
 
 # create a new kind cluster
 create-cluster name:
-  kind create cluster --name {{name}} --config {{kind-config}}
+  kind create cluster --name {{name}} --config {{kind_config}}
 
 # run cloud-provider-kind in background
 start-lb:
@@ -47,6 +47,14 @@ destroy-cluster:
   kind delete cluster --name $cluster_name
 
 # deploy an app from the manifests
-deploy app:
-  kustomize build manifests/{{app}}/overlays/{{default_overlay}} \
+deploy app="":
+  #!/usr/bin/env bash
+  if [ -z "{{app}}" ]; then
+    app=$(ls manifests | gum filter --placeholder "Choose an app to deploy")
+    [ -z "$app" ] && exit 0
+  else
+    app="{{app}}"
+  fi
+  set -x
+  kustomize build manifests/$app/overlays/{{default_overlay}} \
     | kubectl apply -f -
