@@ -39,6 +39,12 @@ create-cluster name:
 # run cloud-provider-kind in background
 start-lb:
   #!/usr/bin/env bash
+  if [ -f /tmp/cloud-provider-kind.pid ]; then
+    pid=$(cat /tmp/cloud-provider-kind.pid)
+    if kill -0 $pid 2>/dev/null; then
+      exit 0
+    fi
+  fi
   cloud-provider-kind > /tmp/cloud-provider-kind.log 2>&1 &
   echo $! > /tmp/cloud-provider-kind.pid
 
