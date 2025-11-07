@@ -12,6 +12,7 @@ kind_config := env("KIND_CONFIG", "kind-config/one-node.yaml")
 # Available overlays: kind (default for local Kind clusters)
 overlay := env("OVERLAY", "kind")
 
+
 # show this message
 help:
     @just --list --unsorted
@@ -25,12 +26,26 @@ create name: (create-cluster name) \
 destroy: stop-lb destroy-cluster
 
 # ensure cluster and load balancer are running
-start:
-  @echo "Not yet implemented"
-
+start: start-containers start-lb
+ 
 # ensure cluster and load balancer are stopped
 stop:
   @echo "Not yet implemented"
+  # - [ ] stop the load balancer if running
+  # - [ ] stop the containers that are nodes
+
+# start stopped Kind cluster containers
+start-containers:
+  #!/usr/bin/env bash
+  # Get cluster name from current kubectl context
+  cluster_name=$(kubectl config current-context | sed 's/kind-//')
+
+  # Check and start Kind cluster containers
+  stopped_containers=$(docker ps -a --filter "label=io.x-k8s.kind.cluster=$cluster_name" --filter "status=exited" --format "{{.ID}}")
+
+  if [ -n "$stopped_containers" ]; then
+    docker start $stopped_containers
+  fi
 
 # create a new kind cluster
 create-cluster name:
