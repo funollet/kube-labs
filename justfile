@@ -1,7 +1,16 @@
 # https://just.systems
 
-kind_config := "kind-config/one-node.yaml"
-default_overlay := "kind"
+_ := require("gum")
+
+# Path to Kind cluster configuration file
+# Override with: KIND_CONFIG=path/to/config.yaml just <task>
+# Available configs: kind-config/one-node.yaml, kind-config/three-workers.yaml
+kind_config := env("KIND_CONFIG", "kind-config/one-node.yaml")
+
+# Kustomize overlay for cluster type
+# Override with: OVERLAY=<overlay> just <task>
+# Available overlays: kind (default for local Kind clusters)
+overlay := env("OVERLAY", "kind")
 
 # show this message
 help:
@@ -56,5 +65,5 @@ deploy app="":
     app="{{app}}"
   fi
   set -x
-  kustomize build manifests/$app/overlays/{{default_overlay}} \
+  kustomize build manifests/$app/overlays/{{overlay}} \
     | kubectl apply -f -
