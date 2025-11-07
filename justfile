@@ -13,7 +13,7 @@ create name: (create-cluster name) \
     (deploy "metrics-server")
 
 # destroy the cluster
-destroy name: stop-lb (destroy-cluster name)
+destroy: stop-lb destroy-cluster
 
 # ensure cluster and load balancer are running
 start:
@@ -39,8 +39,12 @@ stop-lb:
   -rm /tmp/cloud-provider-kind.pid
 
 # destroy the cluster
-destroy-cluster name:
-  kind delete cluster --name {{name}}
+destroy-cluster:
+  #!/usr/bin/env bash
+  cluster_name=$(kubectl config current-context | sed 's/kind-//')
+  gum confirm --default=false "Delete cluster '$cluster_name'?" || exit 0
+  gum confirm --default=false "Really REALLY delete cluster '$cluster_name'?" || exit 0
+  kind delete cluster --name $cluster_name
 
 # deploy an app from the manifests
 deploy app:
