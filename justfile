@@ -38,7 +38,7 @@ start-containers:
   cluster_name=$(kubectl config current-context | sed 's/kind-//')
 
   # Check and start Kind cluster containers
-  stopped_containers=$(docker ps -a --filter "label=io.x-k8s.kind.cluster=$cluster_name" --filter "status=exited" --format '\{\{.ID\}\}')
+  stopped_containers=$(docker ps -a --filter "label=io.x-k8s.kind.cluster=$cluster_name" --filter "status=exited" --format '{{{{.ID}}')
 
   if [ -n "$stopped_containers" ]; then
     docker start $stopped_containers
@@ -72,7 +72,7 @@ stop-containers:
   cluster_name=$(kubectl config current-context | sed 's/kind-//')
 
   # Stop all running Kind cluster containers
-  running_containers=$(docker ps --filter "label=io.x-k8s.kind.cluster=$cluster_name" --filter "status=running" --format '\{\{.ID\}\}')
+  running_containers=$(docker ps --filter "label=io.x-k8s.kind.cluster=$cluster_name" --filter "status=running" --format '{{{{.ID}}' )
 
   if [ -n "$running_containers" ]; then
     docker stop $running_containers
