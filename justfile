@@ -1,7 +1,7 @@
 # https://just.systems
 
 _ := require("gum")
-_ := require("abduco")
+__ := require("abduco")
 
 # Path to Kind cluster configuration file
 # Override with: KIND_CONFIG=path/to/config.yaml just <task>
