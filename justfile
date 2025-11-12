@@ -1,6 +1,7 @@
 # https://just.systems
 
 _ := require("gum")
+_ := require("abduco")
 
 # Path to Kind cluster configuration file
 # Override with: KIND_CONFIG=path/to/config.yaml just <task>
@@ -50,20 +51,11 @@ create-cluster name:
 
 # run cloud-provider-kind in background
 start-lb:
-  #!/usr/bin/env bash
-  if [ -f /tmp/cloud-provider-kind.pid ]; then
-    pid=$(cat /tmp/cloud-provider-kind.pid)
-    if kill -0 $pid 2>/dev/null; then
-      exit 0
-    fi
-  fi
-  cloud-provider-kind > /tmp/cloud-provider-kind.log 2>&1 &
-  echo $! > /tmp/cloud-provider-kind.pid
+  -abduco -n cloud-provider-kind cloud-provider-kind
 
 # stop cloud-provider-kind
 stop-lb:
-  -kill $(cat /tmp/cloud-provider-kind.pid)
-  -rm /tmp/cloud-provider-kind.pid
+  -pkill -f "abduco.*cloud-provider-kind"
 
 # stop Kind cluster containers
 stop-containers:
